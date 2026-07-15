@@ -1,12 +1,39 @@
 "use client";
 
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
+const WEB3FORMS_ACCESS_KEY = "d2bfebaa-452e-4b84-9b05-af0f66ceaee4";
+
 export default function Home() {
   const navRef = useRef(null);
+  const [status, setStatus] = useState("idle");
+
+  async function handleReservation(e) {
+    e.preventDefault();
+    setStatus("sending");
+    const form = e.target;
+    const data = new FormData(form);
+    data.append("access_key", WEB3FORMS_ACCESS_KEY);
+    data.append("subject", "Nouvelle demande de réservation — Brasier");
+    try {
+      const res = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: data,
+      });
+      const result = await res.json();
+      if (result.success) {
+        setStatus("success");
+        form.reset();
+      } else {
+        setStatus("error");
+      }
+    } catch (err) {
+      setStatus("error");
+    }
+  }
 
   useEffect(() => {
     gsap.registerPlugin(ScrollTrigger);
@@ -197,10 +224,21 @@ export default function Home() {
         <div className="relative max-w-3xl mx-auto px-6 reveal-up">
           <p className="label mb-6">Réservation</p>
           <h2 className="h2 text-4xl md:text-6xl mb-10">Une table, ce soir ?</h2>
-          <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-3 justify-center max-w-lg mx-auto mb-10">
-            <input type="text" placeholder="Votre nom" className="flex-1 px-5 py-3 rounded-full text-sm" style={{ background: "var(--surface)", border: "1px solid var(--line)", color: "var(--text)" }} />
-            <button className="magnetic btn-primary px-7 py-3 text-sm whitespace-nowrap">Vérifier les places</button>
-          </form>
+          {status === "success" ? (
+            <p className="mb-10" style={{ color: "var(--gold)" }}>Merci, votre demande a bien été envoyée ! Nous vous recontactons rapidement.</p>
+          ) : (
+            <form onSubmit={handleReservation} className="flex flex-col gap-3 max-w-md mx-auto mb-10">
+              <input required type="text" name="name" placeholder="Votre nom" className="px-5 py-3 rounded-full text-sm" style={{ background: "var(--surface)", border: "1px solid var(--line)", color: "var(--text)" }} />
+              <input required type="email" name="email" placeholder="Votre email" className="px-5 py-3 rounded-full text-sm" style={{ background: "var(--surface)", border: "1px solid var(--line)", color: "var(--text)" }} />
+              <input type="tel" name="phone" placeholder="Votre téléphone" className="px-5 py-3 rounded-full text-sm" style={{ background: "var(--surface)", border: "1px solid var(--line)", color: "var(--text)" }} />
+              <button disabled={status === "sending"} className="magnetic btn-primary px-7 py-3 text-sm whitespace-nowrap">
+                {status === "sending" ? "Envoi en cours..." : "Vérifier les places"}
+              </button>
+              {status === "error" && (
+                <p className="text-sm" style={{ color: "var(--accent-light)" }}>Une erreur est survenue, réessaie dans un instant.</p>
+              )}
+            </form>
+          )}
           <p style={{ color: "var(--text-muted)" }} className="text-sm">18 rue de la Braise, 75011 Paris — 01 42 00 00 00</p>
         </div>
       </section>
