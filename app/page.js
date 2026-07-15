@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
-const WEB3FORMS_ACCESS_KEY = "d2bfebaa-452e-4b84-9b05-af0f66ceaee4";
+const WEB3FORMS_ACCESS_KEY = "COLLE_TA_CLE_ICI";
 
 export default function Home() {
   const navRef = useRef(null);
@@ -44,6 +44,14 @@ export default function Home() {
     }
     requestAnimationFrame(raf);
     lenis.on("scroll", ScrollTrigger.update);
+
+    document.querySelectorAll('a[href^="#"]').forEach((link) => {
+      link.addEventListener("click", (e) => {
+        e.preventDefault();
+        const target = document.querySelector(link.getAttribute("href"));
+        if (target) lenis.scrollTo(target);
+      });
+    });
 
     lenis.on("scroll", ({ scroll }) => {
       if (!navRef.current) return;
