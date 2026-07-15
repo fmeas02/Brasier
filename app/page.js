@@ -1,0 +1,217 @@
+"use client";
+
+import { useEffect, useRef } from "react";
+import gsap from "gsap";
+import { ScrollTrigger } from "gsap/ScrollTrigger";
+import Lenis from "lenis";
+
+export default function Home() {
+  const navRef = useRef(null);
+
+  useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
+    const lenis = new Lenis({ duration: 1.1, smoothWheel: true });
+    function raf(time) {
+      lenis.raf(time);
+      requestAnimationFrame(raf);
+    }
+    requestAnimationFrame(raf);
+    lenis.on("scroll", ScrollTrigger.update);
+
+    lenis.on("scroll", ({ scroll }) => {
+      if (!navRef.current) return;
+      if (scroll > 40) navRef.current.classList.add("nav-blur");
+      else navRef.current.classList.remove("nav-blur");
+    });
+
+    const ctx = gsap.context(() => {
+      document.querySelectorAll("[data-reveal]").forEach((el, i) => {
+        gsap.fromTo(
+          el,
+          { yPercent: 110 },
+          { yPercent: 0, duration: 1.1, ease: "expo.out", delay: i * 0.08, scrollTrigger: { trigger: el, start: "top 90%" } }
+        );
+      });
+      document.querySelectorAll(".reveal-up").forEach((el) => {
+        gsap.fromTo(
+          el,
+          { opacity: 0, y: 40 },
+          { opacity: 1, y: 0, duration: 1, ease: "power3.out", scrollTrigger: { trigger: el, start: "top 85%" } }
+        );
+      });
+      gsap.to("#marquee", { xPercent: -50, repeat: -1, duration: 22, ease: "linear" });
+
+      document.querySelectorAll(".magnetic").forEach((btn) => {
+        const move = (e) => {
+          const r = btn.getBoundingClientRect();
+          const x = (e.clientX - r.left - r.width / 2) * 0.3;
+          const y = (e.clientY - r.top - r.height / 2) * 0.3;
+          gsap.to(btn, { x, y, duration: 0.3, ease: "power2.out" });
+        };
+        const leave = () => gsap.to(btn, { x: 0, y: 0, duration: 0.5, ease: "elastic.out(1,0.4)" });
+        btn.addEventListener("mousemove", move);
+        btn.addEventListener("mouseleave", leave);
+      });
+
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) {
+        document.querySelectorAll("[data-reveal],.reveal-up").forEach((el) => gsap.set(el, { opacity: 1, yPercent: 0, y: 0 }));
+      }
+    });
+
+    return () => {
+      ctx.revert();
+      lenis.destroy();
+    };
+  }, []);
+
+  return (
+    <div className="relative overflow-x-hidden">
+      <svg className="grain" width="100%" height="100%">
+        <filter id="noise-brasier">
+          <feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" stitchTiles="stitch" />
+        </filter>
+        <rect width="100%" height="100%" filter="url(#noise-brasier)" />
+      </svg>
+
+      <nav ref={navRef} className="fixed top-0 left-0 right-0 z-50 transition-all duration-500">
+        <div className="max-w-7xl mx-auto px-6 md:px-10 py-5 flex items-center justify-between">
+          <a href="#" className="serif text-xl tracking-tight" style={{ color: "var(--text)" }}>Brasier</a>
+          <div className="hidden md:flex items-center gap-10 text-sm" style={{ color: "var(--text-dim)" }}>
+            <a href="#histoire" className="hover:text-white transition-colors">L&apos;histoire</a>
+            <a href="#carte" className="hover:text-white transition-colors">La carte</a>
+            <a href="#salle" className="hover:text-white transition-colors">La salle</a>
+            <a href="#avis" className="hover:text-white transition-colors">Avis</a>
+          </div>
+          <a href="#reserver" className="magnetic btn-primary text-sm px-5 py-2.5">Réserver</a>
+        </div>
+      </nav>
+
+      <section className="relative min-h-screen flex items-end" style={{ background: "radial-gradient(ellipse at 50% 0%, var(--bg-2), var(--bg) 70%)" }}>
+        <div className="absolute inset-0 opacity-40" style={{ background: "url('https://images.unsplash.com/photo-1544025162-d76694265947?w=1600&q=80') center/cover" }} />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to top, var(--bg) 5%, rgba(20,16,13,0.3) 55%, rgba(20,16,13,0.75))" }} />
+        <div className="relative max-w-7xl mx-auto px-6 md:px-10 pb-20 pt-40 w-full">
+          <div className="line-mask"><p className="label mb-6" data-reveal="">Cuisine au feu — Paris 11e</p></div>
+          <h1 className="h1 text-[16vw] md:text-[7.5vw] leading-[0.92]">
+            <div className="line-mask"><div data-reveal="">Là où le feu</div></div>
+            <div className="line-mask"><div data-reveal="" style={{ color: "var(--accent-light)" }}>devient goût.</div></div>
+          </h1>
+          <div className="line-mask mt-8 max-w-md">
+            <p data-reveal="" className="text-base" style={{ color: "var(--text-dim)" }}>
+              Une cuisine entière tournée vers la braise, le bois, la fumée. Produits de saison, cuisson à vue, une seule flamme depuis dix ans.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <div className="py-6 overflow-hidden border-y" style={{ borderColor: "var(--line)", background: "var(--bg-2)" }}>
+        <div id="marquee" className="flex whitespace-nowrap serif text-3xl md:text-5xl" style={{ color: "var(--text-muted)" }}>
+          {Array.from({ length: 2 }).map((_, i) => (
+            <span key={i}>
+              <span className="mx-8">Braise</span><span className="mx-8" style={{ color: "var(--gold)" }}>·</span>
+              <span className="mx-8">Fumée</span><span className="mx-8" style={{ color: "var(--gold)" }}>·</span>
+              <span className="mx-8">Terroir</span><span className="mx-8" style={{ color: "var(--gold)" }}>·</span>
+              <span className="mx-8">Flamme vive</span><span className="mx-8" style={{ color: "var(--gold)" }}>·</span>
+            </span>
+          ))}
+        </div>
+      </div>
+
+      <section id="histoire" className="max-w-7xl mx-auto px-6 md:px-10 py-28 md:py-36 grid md:grid-cols-2 gap-14 items-center">
+        <div className="reveal-up">
+          <p className="label mb-5">L&apos;histoire</p>
+          <h2 className="h2 text-4xl md:text-5xl mb-6">Une seule source de chaleur, depuis le premier jour.</h2>
+          <p style={{ color: "var(--text-dim)" }} className="leading-relaxed mb-5">
+            Brasier est né d&apos;un refus : celui du gaz, de l&apos;électrique, de tout ce qui éloigne la cuisine du feu. Ici, tout passe par la braise — légumes, poissons, viandes maturées — dans une salle ouverte où l&apos;on regarde cuisiner comme on regarde un âtre l&apos;hiver.
+          </p>
+          <p style={{ color: "var(--text-dim)" }} className="leading-relaxed">
+            Le chef Antoine Reyval compose une carte courte, réécrite chaque semaine au rythme du marché de Rungis et des petits producteurs d&apos;Île-de-France.
+          </p>
+        </div>
+        <div className="relative reveal-up">
+          <img src="https://images.unsplash.com/photo-1552566626-52f8b828add9?w=900&q=80" className="img-treat w-full aspect-[4/5] object-cover" alt="Cuisine ouverte au feu" />
+        </div>
+      </section>
+
+      <section id="carte" className="py-28 md:py-36" style={{ background: "var(--bg-2)" }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-10 mb-14">
+          <p className="label mb-5">La carte</p>
+          <h2 className="h2 text-4xl md:text-5xl max-w-xl">Trois services, une même exigence.</h2>
+        </div>
+        <div className="max-w-7xl mx-auto px-6 md:px-10 grid md:grid-cols-3 gap-6">
+          <div className="card overflow-hidden reveal-up">
+            <img src="https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=700&q=80" className="img-treat w-full h-64 object-cover" alt="Entrées" />
+            <div className="p-7">
+              <p className="label mb-3">Entrées</p>
+              <h3 className="serif text-2xl mb-3">Braises douces</h3>
+              <p style={{ color: "var(--text-dim)" }} className="text-sm leading-relaxed">Légumes fumés, poissons crus relevés à la cendre, pains au levain grillés minute.</p>
+            </div>
+          </div>
+          <div className="card overflow-hidden reveal-up">
+            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=700&q=80" className="img-treat w-full h-64 object-cover" alt="Plats" />
+            <div className="p-7">
+              <p className="label mb-3">Plats</p>
+              <h3 className="serif text-2xl mb-3">Pièces entières</h3>
+              <p style={{ color: "var(--text-dim)" }} className="text-sm leading-relaxed">Viandes maturées, poissons entiers, tout cuit à la braise devant vous, sans exception.</p>
+            </div>
+          </div>
+          <div className="card overflow-hidden reveal-up">
+            <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=700&q=80" className="img-treat w-full h-64 object-cover" alt="Desserts" />
+            <div className="p-7">
+              <p className="label mb-3">Desserts</p>
+              <h3 className="serif text-2xl mb-3">Sucré fumé</h3>
+              <p style={{ color: "var(--text-dim)" }} className="text-sm leading-relaxed">Fruits rôtis, caramels salés, une pâtisserie qui garde toujours une trace de bois.</p>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="salle" className="max-w-7xl mx-auto px-6 md:px-10 py-28 md:py-36 grid md:grid-cols-2 gap-14 items-center">
+        <div className="order-2 md:order-1 relative reveal-up">
+          <img src="https://images.unsplash.com/photo-1517248135467-4c7edcad34c4?w=900&q=80" className="img-treat w-full aspect-square object-cover" alt="Salle du restaurant" />
+        </div>
+        <div className="order-1 md:order-2 reveal-up">
+          <p className="label mb-5">La salle</p>
+          <h2 className="h2 text-4xl md:text-5xl mb-6">Trente-deux couverts, une flamme visible de partout.</h2>
+          <p style={{ color: "var(--text-dim)" }} className="leading-relaxed mb-8">
+            Pierre brute, bois brûlé, laiton vieilli. La salle a été pensée comme une extension de la cuisine — on y sent la chaleur, on y entend le feu.
+          </p>
+          <div className="grid grid-cols-2 gap-6">
+            <div><p className="serif text-3xl mb-1" style={{ color: "var(--gold)" }}>32</p><p className="text-sm" style={{ color: "var(--text-muted)" }}>couverts</p></div>
+            <div><p className="serif text-3xl mb-1" style={{ color: "var(--gold)" }}>10</p><p className="text-sm" style={{ color: "var(--text-muted)" }}>ans de flamme</p></div>
+          </div>
+        </div>
+      </section>
+
+      <section id="avis" className="py-28 md:py-36" style={{ background: "var(--bg-2)" }}>
+        <div className="max-w-4xl mx-auto px-6 md:px-10 text-center reveal-up">
+          <p className="label mb-8">Avis</p>
+          <p className="h2 text-3xl md:text-4xl leading-snug mb-8">
+            &quot;La meilleure côte de bœuf de Paris, cuite comme nulle part ailleurs. On y retourne pour le feu autant que pour l&apos;assiette.&quot;
+          </p>
+          <p style={{ color: "var(--text-muted)" }} className="text-sm">— Le Fooding, 2025</p>
+        </div>
+      </section>
+
+      <section id="reserver" className="py-28 md:py-40 text-center relative overflow-hidden">
+        <div className="absolute inset-0 opacity-25" style={{ background: "radial-gradient(ellipse at 50% 100%, var(--accent), transparent 60%)" }} />
+        <div className="relative max-w-3xl mx-auto px-6 reveal-up">
+          <p className="label mb-6">Réservation</p>
+          <h2 className="h2 text-4xl md:text-6xl mb-10">Une table, ce soir ?</h2>
+          <form onSubmit={(e) => e.preventDefault()} className="flex flex-col sm:flex-row gap-3 justify-center max-w-lg mx-auto mb-10">
+            <input type="text" placeholder="Votre nom" className="flex-1 px-5 py-3 rounded-full text-sm" style={{ background: "var(--surface)", border: "1px solid var(--line)", color: "var(--text)" }} />
+            <button className="magnetic btn-primary px-7 py-3 text-sm whitespace-nowrap">Vérifier les places</button>
+          </form>
+          <p style={{ color: "var(--text-muted)" }} className="text-sm">18 rue de la Braise, 75011 Paris — 01 42 00 00 00</p>
+        </div>
+      </section>
+
+      <footer className="border-t py-10" style={{ borderColor: "var(--line)" }}>
+        <div className="max-w-7xl mx-auto px-6 md:px-10 flex flex-col md:flex-row justify-between items-center gap-4 text-sm" style={{ color: "var(--text-muted)" }}>
+          <p className="serif" style={{ color: "var(--text)" }}>Brasier</p>
+          <p>Mardi – Samedi, 19h – 23h30</p>
+          <p>© 2026 Brasier</p>
+        </div>
+      </footer>
+    </div>
+  );
+}
