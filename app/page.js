@@ -5,7 +5,7 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 import Lenis from "lenis";
 
-const WEB3FORMS_ACCESS_KEY = "d2bfebaa-452e-4b84-9b05-af0f66ceaee4";
+const WEB3FORMS_ACCESS_KEY = "COLLE_TA_CLE_ICI";
 
 export default function Home() {
   const navRef = useRef(null);
@@ -122,7 +122,16 @@ export default function Home() {
       </nav>
 
       <section className="relative min-h-screen flex items-end" style={{ background: "radial-gradient(ellipse at 50% 0%, var(--bg-2), var(--bg) 70%)" }}>
-        <div className="absolute inset-0 opacity-40" style={{ background: "url('https://images.unsplash.com/photo-1544025162-d76694265947?w=1600&q=80') center/cover" }} />
+        <video
+          autoPlay
+          muted
+          loop
+          playsInline
+          poster="https://images.unsplash.com/photo-1544025162-d76694265947?w=1600&q=80"
+          className="absolute inset-0 w-full h-full object-cover opacity-40"
+        >
+          <source src="https://assets.mixkit.co/videos/35534/35534-720.mp4" type="video/mp4" />
+        </video>
         <div className="absolute inset-0" style={{ background: "linear-gradient(to top, var(--bg) 5%, rgba(20,16,13,0.3) 55%, rgba(20,16,13,0.75))" }} />
         <div className="relative max-w-7xl mx-auto px-6 md:px-10 pb-20 pt-40 w-full">
           <div className="line-mask"><p className="label mb-6" data-reveal="">Cuisine au feu — Paris 11e</p></div>
@@ -172,29 +181,50 @@ export default function Home() {
           <p className="label mb-5">La carte</p>
           <h2 className="h2 text-4xl md:text-5xl max-w-xl">Trois services, une même exigence.</h2>
         </div>
-        <div className="max-w-7xl mx-auto px-6 md:px-10 grid md:grid-cols-3 gap-6">
-          <div className="card overflow-hidden reveal-up">
-            <img src="https://images.unsplash.com/photo-1432139555190-58524dae6a55?w=700&q=80" className="img-treat w-full h-64 object-cover" alt="Entrées" />
-            <div className="p-7">
-              <p className="label mb-3">Entrées</p>
-              <h3 className="serif text-2xl mb-3">Braises douces</h3>
-              <p style={{ color: "var(--text-dim)" }} className="text-sm leading-relaxed">Légumes fumés, poissons crus relevés à la cendre, pains au levain grillés minute.</p>
+        <div className="max-w-4xl mx-auto px-6 md:px-10 grid md:grid-cols-3 gap-12">
+          <div>
+            <p className="serif text-2xl mb-6" style={{ color: "var(--gold)" }}>Entrées</p>
+            <div className="space-y-5">
+              {[
+                ["Légumes fumés, cendre de poireau", "14€"],
+                ["Tartare de daurade, huile de braise", "18€"],
+                ["Pain au levain grillé, beurre noisette", "9€"],
+              ].map(([name, price]) => (
+                <div key={name} className="flex justify-between gap-4">
+                  <p className="text-sm" style={{ color: "var(--text-dim)" }}>{name}</p>
+                  <p className="text-sm whitespace-nowrap" style={{ color: "var(--text)" }}>{price}</p>
+                </div>
+              ))}
             </div>
           </div>
-          <div className="card overflow-hidden reveal-up">
-            <img src="https://images.unsplash.com/photo-1544025162-d76694265947?w=700&q=80" className="img-treat w-full h-64 object-cover" alt="Plats" />
-            <div className="p-7">
-              <p className="label mb-3">Plats</p>
-              <h3 className="serif text-2xl mb-3">Pièces entières</h3>
-              <p style={{ color: "var(--text-dim)" }} className="text-sm leading-relaxed">Viandes maturées, poissons entiers, tout cuit à la braise devant vous, sans exception.</p>
+          <div>
+            <p className="serif text-2xl mb-6" style={{ color: "var(--gold)" }}>Plats</p>
+            <div className="space-y-5">
+              {[
+                ["Côte de bœuf maturée 45 jours, braise", "38€"],
+                ["Poisson entier du jour, herbes brûlées", "32€"],
+                ["Légumes racines rôtis à l'os, jus corsé", "24€"],
+              ].map(([name, price]) => (
+                <div key={name} className="flex justify-between gap-4">
+                  <p className="text-sm" style={{ color: "var(--text-dim)" }}>{name}</p>
+                  <p className="text-sm whitespace-nowrap" style={{ color: "var(--text)" }}>{price}</p>
+                </div>
+              ))}
             </div>
           </div>
-          <div className="card overflow-hidden reveal-up">
-            <img src="https://images.unsplash.com/photo-1551024506-0bccd828d307?w=700&q=80" className="img-treat w-full h-64 object-cover" alt="Desserts" />
-            <div className="p-7">
-              <p className="label mb-3">Desserts</p>
-              <h3 className="serif text-2xl mb-3">Sucré fumé</h3>
-              <p style={{ color: "var(--text-dim)" }} className="text-sm leading-relaxed">Fruits rôtis, caramels salés, une pâtisserie qui garde toujours une trace de bois.</p>
+          <div>
+            <p className="serif text-2xl mb-6" style={{ color: "var(--gold)" }}>Desserts</p>
+            <div className="space-y-5">
+              {[
+                ["Fruits rôtis à la braise, caramel salé", "12€"],
+                ["Tarte fine, glace au foin brûlé", "13€"],
+                ["Chocolat fumé, sel de Guérande", "11€"],
+              ].map(([name, price]) => (
+                <div key={name} className="flex justify-between gap-4">
+                  <p className="text-sm" style={{ color: "var(--text-dim)" }}>{name}</p>
+                  <p className="text-sm whitespace-nowrap" style={{ color: "var(--text)" }}>{price}</p>
+                </div>
+              ))}
             </div>
           </div>
         </div>
